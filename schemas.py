@@ -11,10 +11,10 @@ Model name is converted to lowercase for the collection name:
 - BlogPost -> "blogs" collection
 """
 
-from pydantic import BaseModel, Field
-from typing import Optional
+from pydantic import BaseModel, Field, HttpUrl
+from typing import Optional, List
 
-# Example schemas (replace with your own):
+# Example schemas (you can keep these or remove later)
 
 class User(BaseModel):
     """
@@ -38,11 +38,18 @@ class Product(BaseModel):
     category: str = Field(..., description="Product category")
     in_stock: bool = Field(True, description="Whether product is in stock")
 
-# Add your own schemas here:
-# --------------------------------------------------
-
-# Note: The Flames database viewer will automatically:
-# 1. Read these schemas from GET /schema endpoint
-# 2. Use them for document validation when creating/editing
-# 3. Handle all database operations (CRUD) directly
-# 4. You don't need to create any database endpoints!
+# App-specific schema for exam papers
+class Paper(BaseModel):
+    """
+    Past exam papers
+    Collection name: "paper"
+    """
+    title: str = Field(..., description="Paper title, e.g., Mathematics Paper 1")
+    subject: str = Field(..., description="Subject name, e.g., Mathematics")
+    board: str = Field(..., description="Exam board, e.g., Cambridge, Edexcel, College Board")
+    level: str = Field(..., description="Level, e.g., IGCSE, A-Level, High School, University")
+    year: int = Field(..., ge=1900, le=2100, description="Exam year")
+    paper_url: HttpUrl = Field(..., description="Direct link to the paper PDF")
+    marking_scheme_url: Optional[HttpUrl] = Field(None, description="Direct link to the marking scheme/answers PDF")
+    description: Optional[str] = Field(None, description="Short description or notes")
+    tags: Optional[List[str]] = Field(default_factory=list, description="Optional tags for filtering/search")
